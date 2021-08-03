@@ -1,68 +1,42 @@
 <template>
-  <!-- eslint-disable max-len -->
-  <main class='content container'>
-    <div class='content__top content__top--catalog'>
-      <h1 class='content__title'>
-        Каталог
-      </h1>
-      <span class='content__info'>
-        152 товара
-      </span>
-    </div>
-
-    <div class='content__catalog'>
-      <ProductFilter :color-id.sync='filterColor' :price-from.sync='filterPriceFrom' :price-to.sync='filterPriceTo' :category-id.sync='filterCategory'/>
-      <section class='catalog'>
-        <ProductList :products='products' />
-        <BasePagination v-model='page' :count='countProducts' :per-page='productsPerPage' />
-      </section>
-    </div>
-  </main>
+  <component :is='currentPageComponent' :pageParams='currentPageParams'  />
 </template>
 
 <script>
-import products from './data/products';
-import ProductList from './components/ProductList.vue';
-import ProductFilter from './components/ProductFilter.vue';
-import BasePagination from './components/BasePagination.vue';
+import eventBus from './eventBus';
+import MainPage from './pages/MainPage.vue';
+import ProductPage from './pages/ProductPage.vue';
+import NotFoundPage from './pages/NotFoundPage.vue';
+
+const routes = {
+  main: 'MainPage',
+  product: 'ProductPage',
+};
 
 export default {
-  name: 'App',
-  components: { ProductList, BasePagination, ProductFilter },
+  components: { MainPage, ProductPage, NotFoundPage },
   data() {
     return {
-      filterPriceFrom: 0,
-      filterPriceTo: 0,
-      filterCategory: 0,
-      filterColor: 0,
-      productsPerPage: 6,
-      page: 1,
+      currentPage: 'main',
+      currentPageParams: {
+
+      },
     };
   },
   computed: {
-    filterProducts() {
-      let filterProducts = products;
-      if (this.filterPriceFrom > 0) {
-        filterProducts = filterProducts.filter((product) => product.price > this.filterPriceFrom);
-      }
-      if (this.filterPriceTo > 0) {
-        filterProducts = filterProducts.filter((product) => product.price < this.filterPriceTo);
-      }
-      if (this.filterCategory) {
-        filterProducts = filterProducts.filter((product) => product.categoryID === this.filterCategory);
-      }
-      if (this.filterColor > 0) {
-        filterProducts = filterProducts.filter((product) => product.colorId.some((color) => color === this.filterColor));
-      }
-      return filterProducts;
+    currentPageComponent() {
+      return routes[this.currentPage] || 'NotFoundPage';
     },
-    products() {
-      const offset = (this.page - 1) * this.productsPerPage;
-      return this.filterProducts.slice(offset, offset + this.productsPerPage);
+  },
+  methods: {
+    goToPage(pageName, pageParams) {
+      this.currentPage = pageName;
+      this.currentPageParams = pageParams || {};
     },
-    countProducts() {
-      return this.filterProducts.length;
-    },
+  },
+  created() {
+    console.log(5656);
+    eventBus.$on('goToPage', (pageName, pageParams) => this.goToPage(pageName, pageParams));
   },
 };
 </script>
