@@ -1,7 +1,7 @@
 <template>
 <!-- eslint-disable max-len -->
   <ul class="catalog__list">
-    <ProductItem  v-for='product in products' :key='product.id' :product='product' />
+    <ProductItem  v-for='product in products' :key='product.id' :filterColor='filterColor' :product='product' />
   </ul>
 </template>
 
@@ -10,6 +10,6 @@ import ProductItem from './ProductItem.vue';
 
 export default {
   components: { ProductItem },
-  props: ['products'],
+  props: ['products', 'filterColor'],
 };
 </script>
