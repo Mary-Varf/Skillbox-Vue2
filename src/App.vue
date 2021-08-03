@@ -63,7 +63,6 @@ export default {
     countProducts() {
       return this.filterProducts.length;
     },
-
   },
 };
 </script>
