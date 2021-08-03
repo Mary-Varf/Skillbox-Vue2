@@ -148,8 +148,8 @@ export default {
     submit() {
       this.$emit('update:priceFrom', this.currentPriceFrom);
       this.$emit('update:priceTo', this.currentPriceTo);
-      this.$emit('update:categoryId', this.currentCategoryId);
       this.$emit('update:colorId', this.currentColorId);
+      this.$emit('update:categoryId', this.currentCategoryId);
     },
     reset() {
       this.$emit('update:priceFrom', 0);
