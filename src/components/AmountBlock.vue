@@ -19,7 +19,7 @@ export default {
   props: ['productAmount'],
   data() {
     return {
-      currentProductAmount: 1,
+      currentProductAmount: this.productAmount,
     };
   },
   watch: {
