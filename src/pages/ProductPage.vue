@@ -107,19 +107,7 @@
               </ul>
             </fieldset>
             <div class="item__row">
-              <div class="form__counter">
-                <button type="button" :class="{pointer: productAmount > 1, disabled: productAmount <= 1}" aria-label="Убрать один товар" @click="productAmount > 1 ? productAmount-- : 1">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-minus"></use>
-                  </svg>
-                </button>
-                <input type="text" v-model="productAmount">
-                <button :class="{pointer: productAmount >= 1}" type="button" aria-label="Добавить один товар" @click='productAmount++'>
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-plus"></use>
-                  </svg>
-                </button>
-              </div>
+              <AmountBlock :productAmount.sync="productAmount"/>
               <button class="button button--primery" type="submit">
                 В корзину
               </button>
@@ -179,8 +167,10 @@ import products from '@/data/products';
 import categories from '@/data/categories';
 import goToPage from '@/helpers/goToPage';
 import numberFormat from '@/helpers/numberFormat';
+import AmountBlock from '@/components/AmountBlock.vue';
 
 export default {
+  components: { AmountBlock },
   data() {
     return {
       productAmount: 1,
@@ -200,7 +190,7 @@ export default {
   methods: {
     goToPage,
     addToCart() {
-      this.$store.commit('addProductToCart', { productId: this.product.id, amount: this.productAmount });
+      if (this.productAmount >= 1) this.$store.commit('addProductToCart', { productId: this.product.id, amount: this.productAmount });
     },
   },
 };
