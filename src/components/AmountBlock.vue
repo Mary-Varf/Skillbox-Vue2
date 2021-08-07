@@ -1,5 +1,5 @@
 <template>
-  <div class="form__counter">
+  <div :class="{product__counter: size === 10}" class="form__counter">
     <button type="button" :class="{pointer: productAmount > 1, disabled: productAmount <= 1}" aria-label="Убрать один товар" @click="dec">
       <svg width="12" height="12" fill="currentColor">
         <use xlink:href="#icon-minus"></use>
@@ -7,7 +7,7 @@
     </button>
     <input type="text" v-model="currentProductAmount"  @change='addItem' >
     <button :class="{pointer: productAmount >= 1}" type="button" aria-label="Добавить один товар" @click='inc'>
-      <svg width="12" height="12" fill="currentColor">
+      <svg :width="size" :height="size" fill="currentColor">
         <use xlink:href="#icon-plus"></use>
       </svg>
     </button>
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  props: ['productAmount'],
+  props: ['productAmount', 'size'],
   data() {
     return {
       currentProductAmount: this.productAmount,

@@ -13,10 +13,10 @@
       {{product.price | numberFormat}} ₽
     </span>
     <ul class="colors colors--black">
-      <li class='colors__item' v-for='color in colorsList' :key="`${color}_${product.id}`">
+      <li class='colors__item' v-for='color in colorsList' :key="`${color.id}_${product.id}`">
         <label class='colors__label'>
-          <input name='color' class='colors__radio sr-only' type='radio' :value='color' v-model='selectedColor' :class="{}">
-          <span class='colors__value' :style="{backgroundColor: colors[color - 1].title}" :class="{border: colors[color - 1].title === '#fff', checkedItem: color === checked}">
+          <input name='color' class='colors__radio sr-only' type='radio' :value='color' v-model='selectedColor' >
+          <span class='colors__value' :style="{backgroundColor: color.code}" :class="{border: color.code === '#fafafa', checkedItem: color.id === checked}">
           </span>
         </label>
       </li>
@@ -27,12 +27,11 @@
 <script>
 import goToPage from '@/helpers/goToPage';
 import numberFormat from '@/helpers/numberFormat';
-import colors from '../data/colors';
 
 export default {
   data() {
     return {
-      selectedColor: this.product.colorId[0],
+      selectedColor: this.product.colors[0].id,
     };
   },
   props: ['product', 'filterColor'],
@@ -40,11 +39,8 @@ export default {
     numberFormat,
   },
   computed: {
-    colors() {
-      return colors;
-    },
     colorsList() {
-      return this.product.colorId;
+      return this.product.colors;
     },
     checked() {
       if (this.filterColor === 0) {

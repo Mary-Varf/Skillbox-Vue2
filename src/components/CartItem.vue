@@ -12,9 +12,7 @@
     <span class="product__code">
       Артикул: {{item.product.id}}
     </span>
-    <div class="product__counter form__counter">
-    <AmountBlock :productAmount.sync="productAmount" />
-    </div>
+    <AmountBlock :productAmount.sync="productAmount" :size='size'/>
     <b class="product__price">
       {{(item.product.price * item.amount) | numberFormat}} ₽
     </b>
@@ -28,7 +26,7 @@
 
 <script>
 import numberFormat from '@/helpers/numberFormat';
-import { mapMutations } from 'vuex';
+import { mapActions } from 'vuex';
 import AmountBlock from '@/components/AmountBlock.vue';
 
 export default {
@@ -37,6 +35,11 @@ export default {
   filters: {
     numberFormat,
   },
+  data() {
+    return {
+      size: 10,
+    };
+  },
   computed: {
     productAmount: {
       get() {
@@ -44,14 +47,17 @@ export default {
       },
       set(value) {
         if (value > 0) {
-          return this.$store.commit('updateCartProductAmount', { productId: this.item.productId, amount: value });
+          return this.$store.dispatch('updateCartProductAmount', { productId: this.item.productId, amount: value });
         }
-        return this.$store.commit('updateCartProductAmount', { productId: this.item.productId, amount: 1 });
+        return this.$store.dispatch('updateCartProductAmount', { productId: this.item.productId, amount: 1 });
       },
     },
   },
   methods: {
-    ...mapMutations({ deleteProduct: 'deleteCartProduct' }),
+    ...mapActions(['deleteCartProduct']),
+    deleteProduct(id) {
+      this.deleteCartProduct({ productId: id });
+    },
   },
 };
 </script>

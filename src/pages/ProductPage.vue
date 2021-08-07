@@ -1,5 +1,7 @@
 <template>
-  <main class="content container">
+  <main class="content container" v-if='productLoading'>Загрузка товара</main>
+  <main class="content container" v-else-if='!productData'>Не удалось загрузить товар</main>
+  <main class="content container" v-else>
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -22,22 +24,17 @@
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper">
-          <img width="570" height="570" :src="product.image" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+          <img width="570" height="570" :src="product.image.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
         </div>
         <ul class="pics__list">
           <li class="pics__item">
             <a href="" class="pics__link pics__link--current">
-              <img width="98" height="98" :src="product.image" srcset="img/phone-square-1@2x.jpg 2x" :alt="product.title">
+              <img width="98" height="98" :src="product.image.file.url" srcset="img/phone-square-1@2x.jpg 2x" :alt="product.title">
             </a>
           </li>
           <li class="pics__item">
             <a href="" class="pics__link">
-              <img width="98" height="98" :src="product.image" srcset="img/phone-square-3@2x.jpg 2x" :alt="product.title">
-            </a>
-          </li>
-          <li class="pics__item">
-            <a class="pics__link" href="#">
-              <img width="98" height="98" :src="product.image" srcset="img/phone-square-4@2x.jpg 2x" :alt="product.title">
+              <img width="98" height="98" :src="product.image.file.url" srcset="img/phone-square-3@2x.jpg 2x" :alt="product.title">
             </a>
           </li>
         </ul>
@@ -107,11 +104,13 @@
               </ul>
             </fieldset>
             <div class="item__row">
-              <AmountBlock :productAmount.sync="productAmount"/>
-              <button class="button button--primery" type="submit">
+              <AmountBlock :productAmount.sync="productAmount" :size="size"/>
+              <button class="button button--primery" type="submit" :disabled='productAddSending'>
                 В корзину
               </button>
             </div>
+            <div v-show='productAdded'>Товар добавлен в корзину</div>
+            <div v-show='productAddSending'>Добавление товара в корзину...</div>
           </form>
         </div>
       </div>
@@ -163,8 +162,9 @@
 </template>
 
 <script>
-import products from '@/data/products';
-import categories from '@/data/categories';
+import axios from 'axios';
+import { mapActions } from 'vuex';
+import API_BASE_URL from '@/config';
 import goToPage from '@/helpers/goToPage';
 import numberFormat from '@/helpers/numberFormat';
 import AmountBlock from '@/components/AmountBlock.vue';
@@ -174,6 +174,12 @@ export default {
   data() {
     return {
       productAmount: 1,
+      size: 12,
+      productData: null,
+      productLoading: false,
+      productLoadingFailed: false,
+      productAdded: false,
+      productAddSending: false,
     };
   },
   filters: {
@@ -181,16 +187,42 @@ export default {
   },
   computed: {
     product() {
-      return products.find((product) => product.id === +this.$route.params.id);
+      return this.productData;
     },
     category() {
-      return categories.find((category) => category.id === this.product.categoryID);
+      return this.productData.category;
     },
   },
   methods: {
+    ...mapActions(['addProductToCart']),
     goToPage,
     addToCart() {
-      if (this.productAmount >= 1) this.$store.commit('addProductToCart', { productId: this.product.id, amount: this.productAmount });
+      this.productAdded = false;
+      this.productAddSending = true;
+      if (this.productAmount >= 1) {
+        this.addProductToCart({ productId: this.product.id, amount: this.productAmount })
+          .then(() => {
+            this.productAdded = true;
+            this.productAddSending = false;
+          });
+      }
+    },
+    loadProduct() {
+      const url = `${API_BASE_URL.API_BASE_URL}/api/products/${this.$route.params.id}`;
+      axios.get(url)
+        .then((response) => { this.productData = response.data; })
+        .catch(() => { this.productLoadingFailed = true; })
+        .then(() => { this.productLoading = false; });
+    },
+  },
+  created() {
+    this.loadProduct();
+  },
+  watch: {
+    '$route.params.id': {
+      handler() {
+        this.loadProduct();
+      },
     },
   },
 };
