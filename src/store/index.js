@@ -11,8 +11,16 @@ export default new Vuex.Store({
     userAccessKey: null,
     cartProductsData: [],
     cartError: false,
+    orderInfo: null,
   },
   mutations: {
+    updateOrderInfo(state, orderInfo) {
+      state.orderInfo = orderInfo;
+    },
+    resetCart(state) {
+      state.cartProducts = [];
+      state.cartProductsData = [];
+    },
     updateCartProductAmount(state, { productId, amount }) {
       const item = state.cartProducts.find((el) => productId === el.productId);
       if (item) {
@@ -51,10 +59,18 @@ export default new Vuex.Store({
       return getters.cartDetailProducts.reduce((acc, item) => (item.product.price * item.amount) + acc, 0);
     },
     totalNumber(state, getters) {
-      return getters.cartDetailProducts.length;
+      return getters.cartDetailProducts.reduce((acc, item) => (item.amount) + acc, 0);
     },
   },
   actions: {
+    loadOrderInfo(context, orderId) {
+      return axios.get(`${API_BASE_URL.API_BASE_URL}/api/orders/${orderId}`, {
+        params: { userAccessKey: context.state.userAccessKey },
+      })
+        .then((response) => {
+          context.commit('updateOrderInfo', response.data);
+        });
+    },
     loadCart(context) {
       return axios.get(`${API_BASE_URL.API_BASE_URL}/api/baskets`, {
         params: { userAccessKey: context.state.userAccessKey },

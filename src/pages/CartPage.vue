@@ -40,7 +40,7 @@
         Корзина
       </h1>
       <span class="content__info">
-        {{ numberOfProducts }}
+        {{ totalNW }}
       </span>
     </div>
     <section class="cart">
@@ -57,9 +57,9 @@
           <p class="cart__price">
             Итого: <span>{{ totalPrice | numberFormat}} ₽</span>
           </p>
-          <button class="cart__button button button--primery" type="submit">
+          <router-link tag="button" :to="{name: 'order'}" class="cart__button button button--primery" type="submit">
             Оформить заказ
-          </button>
+          </router-link>
         </div>
       </form>
     </section>
@@ -68,6 +68,7 @@
 
 <script>
 import numberFormat from '@/helpers/numberFormat';
+import quantityNumberAndWord from '@/helpers/quantityWordAndNumbe';
 import CartItem from '@/components/CartItem.vue';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -79,16 +80,9 @@ export default {
   computed: {
     ...mapGetters({ products: 'cartDetailProducts', totalPrice: 'cartTotalPrice', totalLeng: 'totalNumber' }),
     ...mapActions(['loadCart']),
-    numberOfProducts() {
-      const num = this.totalLeng;
-      let str = 'товар';
-      const secNum = num[num.length - 1];
-      if ((num >= 2 && num <= 4) || (num > 20 && secNum >= 2 && secNum <= 4)) {
-        str = 'товара';
-      } else if ((num >= 5 && num <= 20) || (num > 20 && secNum >= 5) || (num % 10 === 0 && num !== 20)) {
-        str = 'товаров';
-      }
-      return `${num} ${str}`;
+    totalNW() {
+      const number = this.products.reduce((acc, item) => (item.quantity) + acc, 0);
+      return quantityNumberAndWord(number);
     },
   },
 };
