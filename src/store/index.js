@@ -12,8 +12,12 @@ export default new Vuex.Store({
     cartProductsData: [],
     cartError: false,
     orderInfo: null,
+    delivery: 0,
   },
   mutations: {
+    updateDelivery(state, delivery) {
+      state.delivery = delivery;
+    },
     updateOrderInfo(state, orderInfo) {
       state.orderInfo = orderInfo;
     },

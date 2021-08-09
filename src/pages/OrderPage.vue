@@ -41,15 +41,15 @@
             <ul class="cart__options options">
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="0" checked="">
-                  <span class="options__value">
+                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.delivery'>
+                  <span class="options__value"  :class="{checkedOption: !formData.delivery}">
                     Самовывоз <b>бесплатно</b>
                   </span>
                 </label>
               </li>
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="500">
+                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.delivery' value="500">
                   <span class="options__value">
                     Курьером <b>500 ₽</b>
                   </span>
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div class="cart__block">
-          <OrderProductList  :products="products"/>
+          <OrderProductList  :products="products" :delivery='formData.delivery'/>
           <button class="cart__button button button--primery" type="submit">
             Оформить заказ
           </button>
@@ -137,6 +137,7 @@ export default {
           this.$store.commit('resetCart');
           this.$store.commit('updateOrderInfo', response.data);
           this.$router.push({ name: 'orderInfo', params: { id: response.data.id } });
+          this.$store.commit('updateDelivery', this.formData.delivery);
         })
         .catch((error) => {
           this.formError = error.response.data.error.request || {};

@@ -4,7 +4,7 @@
       <OrderProduct :product='product' v-for='product in products' :key='product.id' />
     </ul>
     <div class="cart__total">
-      <p>Доставка: <b>500 ₽</b></p>
+      <p>Доставка: <b>{{delivery}} ₽</b></p>
       <p>Итого: {{ totalNW }} на сумму <b>{{ totalPrice | numberFormat}} ₽</b></p>
     </div>
   </div>
@@ -16,7 +16,14 @@ import quantityNumberAndWord from '@/helpers/quantityWordAndNumbe';
 import OrderProduct from '@/components/OrderProduct.vue';
 
 export default {
-  props: ['products'],
+  props: {
+    products: {
+      default: [],
+    },
+    delivery: {
+      default: 0,
+    },
+  },
   components: { OrderProduct },
   computed: {
     totalPrice() {

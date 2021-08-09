@@ -74,7 +74,7 @@
         </ul>
       </div>
       <div class="cart__block">
-        <OrderProductList :products='info.basket.items' />
+        <OrderProductList :products='info.basket.items' :delivery='delivery'/>
       </div>
     </form>
   </section>
@@ -88,7 +88,7 @@ import OrderProductList from '@/components/OrderProductList.vue';
 export default {
   components: { OrderProductList },
   computed: {
-    ...mapState({ info: 'orderInfo' }),
+    ...mapState({ info: 'orderInfo', delivery: 'delivery' }),
   },
   created() {
     if (this.$store.state.orderInfo && this.$store.state.orderInfo.id === this.$route.params.id) {
