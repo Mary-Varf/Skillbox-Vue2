@@ -1,5 +1,5 @@
 <template>
-  <main class="content container" v-if='productLoading'>Загрузка товара</main>
+  <main class="content container" v-if='productLoading'><Preloader /></main>
   <main class="content container" v-else-if='!productData'>Не удалось загрузить товар</main>
   <main class="content container" v-else>
     <div class="content__top">
@@ -168,9 +168,10 @@ import API_BASE_URL from '@/config';
 import goToPage from '@/helpers/goToPage';
 import numberFormat from '@/helpers/numberFormat';
 import AmountBlock from '@/components/AmountBlock.vue';
+import Preloader from '@/components/Preloader.vue';
 
 export default {
-  components: { AmountBlock },
+  components: { AmountBlock, Preloader },
   data() {
     return {
       productAmount: 1,

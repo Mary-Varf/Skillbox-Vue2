@@ -14,7 +14,7 @@
       <ProductFilter :page.sync='page' :color-id.sync='filterColor' :price-from.sync='filterPriceFrom' :price-to.sync='filterPriceTo' :category-id.sync='filterCategory'/>
       <section class='catalog'>
         <ProductList :products='products' :filterColor='filterColor'/>
-        <div v-if='productLoading'>Загрузка товаров...</div>
+        <Preloader v-if='productLoading' />
         <div v-if='productLoadingFailed'>Произошла ошибка при загрузке товаров <button @click.prevent='loadProducts'>Попробовать еще</button></div>
         <BasePagination v-model='page' :count='countProducts' :per-page='productsPerPage' />
       </section>
@@ -26,11 +26,17 @@
 import API_BASE_URL from '@/config';
 import axios from 'axios';
 import ProductList from '@/components/ProductList.vue';
+import Preloader from '@/components/Preloader.vue';
 import ProductFilter from '@/components/ProductFilter.vue';
 import BasePagination from '@/components/BasePagination.vue';
 
 export default {
-  components: { ProductList, BasePagination, ProductFilter },
+  components: {
+    ProductList,
+    BasePagination,
+    ProductFilter,
+    Preloader,
+  },
   data() {
     return {
       filterPriceFrom: 0,
@@ -94,7 +100,7 @@ export default {
           .then((response) => { this.productsData = response.data; })
           .catch(() => { this.productLoadingFailed = true; })
           .then(() => { this.productLoading = false; });
-      }, 0);
+      }, 200);
     },
   },
   created() {
