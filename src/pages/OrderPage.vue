@@ -41,16 +41,16 @@
             <ul class="cart__options options">
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.delivery'>
-                  <span class="options__value"  :class="{checkedOption: !formData.delivery}">
+                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.deliveryTypeId' value='1' :error='formError.deliveryTypeId'>
+                  <span class="options__value"  :class="{checkedOption: !formData.deliveryTypeId}">
                     Самовывоз <b>бесплатно</b>
                   </span>
                 </label>
               </li>
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.delivery' value="500">
-                  <span class="options__value">
+                  <input class="options__radio sr-only" type="radio" name="delivery" v-model='formData.deliveryTypeId' value="2">
+                  <span class="options__value" >
                     Курьером <b>500 ₽</b>
                   </span>
                 </label>
@@ -61,15 +61,15 @@
             <ul class="cart__options options">
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="card">
-                  <span class="options__value">
+                  <input class="options__radio sr-only" type="radio" name="payment" v-model='formData.paymentTypeId' value="1" :class="{checkedOption: !formData.paymentTypeId}">
+                  <span class="options__value" >
                     Картой при получении
                   </span>
                 </label>
               </li>
               <li class="options__item">
                 <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="cash">
+                  <input class="options__radio sr-only" type="radio"  name="payment" v-model='formData.paymentTypeId' value="2">
                   <span class="options__value">
                     Наличными при получении
                   </span>
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div class="cart__block">
-          <OrderProductList  :products="products" :delivery='formData.delivery'/>
+          <OrderProductList  :products="products" :delivery='deliveryPrice'/>
           <button class="cart__button button button--primery" type="submit">
             Оформить заказ
           </button>
@@ -110,7 +110,7 @@ export default {
 
   data() {
     return {
-      formData: {},
+      formData: { deliveryTypeId: 1, paymentTypeId: 1 },
       formError: {},
       formErrorMessage: '',
     };
@@ -120,6 +120,13 @@ export default {
     totalNW() {
       const number = this.products.reduce((acc, item) => (item.quantity) + acc, 0);
       return quantityNumberAndWord(number);
+    },
+    deliveryPrice() {
+      console.log(!this.formData.deliveryTypeId);
+      if (!this.formData.deliveryTypeId || this.formData.deliveryTypeId === '1' || this.formData.deliveryTypeId === 1) {
+        return 0;
+      }
+      return 500;
     },
   },
   methods: {
@@ -137,11 +144,10 @@ export default {
           this.$store.commit('resetCart');
           this.$store.commit('updateOrderInfo', response.data);
           this.$router.push({ name: 'orderInfo', params: { id: response.data.id } });
-          this.$store.commit('updateDelivery', this.formData.delivery);
         })
         .catch((error) => {
           this.formError = error.response.data.error.request || {};
-          this.formErrorMessage = error.response.data.error.message;
+          this.formErrorMessage = (error.response.data.error.message.length > 0 ? error.response.data.error.message : 'Возникла ошибка, возможно, заполненные не все поля.');
         });
     },
   },

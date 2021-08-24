@@ -1,7 +1,12 @@
 <template>
   <div>
     <ul class="cart__orders">
-      <OrderProduct :product='product' v-for='product in products' :key='product.id' />
+        <li class="cart__order" v-for='product in products' :key='product.id'>
+          <h3>{{ product.productOffer.title }}</h3>
+          <b>{{ product.price | numberFormat }} ₽</b>
+          <b>{{ product.quantity }} шт.</b>
+          <span>Артикул: {{ product.id }}</span>
+        </li>
     </ul>
     <div class="cart__total">
       <p>Доставка: <b>{{delivery}} ₽</b></p>
@@ -13,7 +18,6 @@
 <script>
 import numberFormat from '@/helpers/numberFormat';
 import quantityNumberAndWord from '@/helpers/quantityWordAndNumbe';
-import OrderProduct from '@/components/OrderProduct.vue';
 
 export default {
   props: {
@@ -24,10 +28,9 @@ export default {
       default: 0,
     },
   },
-  components: { OrderProduct },
   computed: {
     totalPrice() {
-      return this.products.reduce((acc, item) => (item.price * item.quantity) + acc, 0);
+      return Number(this.products.reduce((acc, item) => (item.price * item.quantity) + acc, 0)) + Number(this.delivery);
     },
     totalNW() {
       const number = this.products.reduce((acc, item) => (item.quantity) + acc, 0);

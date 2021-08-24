@@ -68,13 +68,13 @@
               Способ оплаты
             </span>
             <span class="dictionary__value">
-              картой при получении
+              {{info.paymentType}}
             </span>
           </li>
         </ul>
       </div>
       <div class="cart__block">
-        <OrderProductList :products='info.basket.items' :delivery='delivery'/>
+        <OrderProductList :products='info.basket.items' :delivery='deliveryNumber'/>
       </div>
     </form>
   </section>
@@ -88,7 +88,13 @@ import OrderProductList from '@/components/OrderProductList.vue';
 export default {
   components: { OrderProductList },
   computed: {
-    ...mapState({ info: 'orderInfo', delivery: 'delivery' }),
+    ...mapState({ info: 'orderInfo' }),
+    deliveryNumber() {
+      if (this.info.deliveryType.id === 1) {
+        return 0;
+      }
+      return 500;
+    },
   },
   created() {
     if (this.$store.state.orderInfo && this.$store.state.orderInfo.id === this.$route.params.id) {

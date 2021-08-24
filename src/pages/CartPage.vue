@@ -47,7 +47,7 @@
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
           <ul class="cart__list">
-            <CartItem v-for="item in products" :key='item.product.id' :item='item'/>
+            <CartItem v-for="item in products" :key='item.product.id' :item='item.product' :amount='item.amount'/>
           </ul>
         </div>
         <div class="cart__block">
@@ -81,7 +81,8 @@ export default {
     ...mapGetters({ products: 'cartDetailProducts', totalPrice: 'cartTotalPrice', totalLeng: 'totalNumber' }),
     ...mapActions(['loadCart']),
     totalNW() {
-      const number = this.products.reduce((acc, item) => (item.quantity) + acc, 0);
+      console.log(this.products);
+      const number = this.products.reduce((acc, item) => (item.amount) + acc, 0);
       return quantityNumberAndWord(number);
     },
   },

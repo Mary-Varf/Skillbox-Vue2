@@ -8,6 +8,7 @@ import OrderPage from '@/pages/OrderPage.vue';
 import OrderInfoPage from '@/pages/OrderInfoPage.vue';
 
 Vue.use(VueRouter);
+Vue.config.devtools = true;
 
 const routes = [
   { name: 'main', component: MainPage, path: '/' },

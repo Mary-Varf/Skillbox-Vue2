@@ -12,11 +12,11 @@ export default new Vuex.Store({
     cartProductsData: [],
     cartError: false,
     orderInfo: null,
-    delivery: 0,
+    filterColor: 0,
   },
   mutations: {
-    updateDelivery(state, delivery) {
-      state.delivery = delivery;
+    updateFilterColor(state, filterColor) {
+      state.filter = filterColor;
     },
     updateOrderInfo(state, orderInfo) {
       state.orderInfo = orderInfo;
@@ -42,22 +42,21 @@ export default new Vuex.Store({
     },
     syncCartProducts(state) {
       state.cartProducts = state.cartProductsData.map((item) => {
-        const el = { productId: item.product.id, amount: item.quantity };
+        const el = { productId: item.id, amount: item.quantity };
         return el;
       });
     },
   },
   getters: {
     cartDetailProducts(state) {
-      if (state.cartError) {
-        return 'error';
+      if (!state.cartError) {
+        return state.cartProducts.map((item) => {
+          const prod = state.cartProductsData.find((p) => p.id === item.productId);
+          const a = { ...item, product: { ...prod, image: prod.productOffer.product.preview.file.url } };
+          return a;
+        });
       }
-      return state.cartProducts.map((item) => {
-        let prod = state.cartProductsData.find((p) => p.product.id === item.productId);
-        prod = prod.product;
-        const a = { ...item, product: { ...prod, image: prod.image.file.url } };
-        return a;
-      });
+      return 'error';
     },
     cartTotalPrice(state, getters) {
       return getters.cartDetailProducts.reduce((acc, item) => (item.product.price * item.amount) + acc, 0);
@@ -76,30 +75,28 @@ export default new Vuex.Store({
         });
     },
     loadCart(context) {
-      return axios.get(`${API_BASE_URL.API_BASE_URL}/api/baskets`, {
-        params: { userAccessKey: context.state.userAccessKey },
-      })
+      return axios.get(`${API_BASE_URL.API_BASE_URL}/api/baskets?userAccessKey=${context.state.userAccessKey}`)
         .then((response) => {
           if (!context.state.userAccessKey) {
             localStorage.setItem('userAccessKey', response.data.user.accessKey);
             context.commit('updateUserAccessKey', response.data.user.accessKey);
           }
+          console.log(response.data.items);
           context.commit('updateCartProductsData', response.data.items);
           context.commit('syncCartProducts');
+          context.commit('updateCartError', false);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
           context.commit('updateCartProductsData', []);
           context.commit('updateCartError', true);
         });
     },
-    addProductToCart(context, { productId, amount }) {
-      return axios.post(`${API_BASE_URL.API_BASE_URL}/api/baskets/products`, {
-        productId: productId,
+    addProductToCart(context, { productId, amount, colorId }) {
+      return axios.post(`${API_BASE_URL.API_BASE_URL}/api/baskets/products?userAccessKey=${context.state.userAccessKey}`, {
+        productOfferId: productId,
+        colorId: colorId,
         quantity: amount,
-      }, {
-        params: {
-          userAccessKey: context.state.userAccessKey,
-        },
       })
         .then((response) => {
           context.commit('updateCartProductsData', response.data.items);
@@ -112,7 +109,7 @@ export default new Vuex.Store({
         return 0;
       }
       return axios.put(`${API_BASE_URL.API_BASE_URL}/api/baskets/products`, {
-        productId: productId,
+        basketItemId: productId,
         quantity: amount,
       }, {
         params: {
@@ -127,12 +124,13 @@ export default new Vuex.Store({
         });
     },
     deleteCartProduct(context, { productId }) {
+      console.log(productId);
       return axios.delete(`${API_BASE_URL.API_BASE_URL}/api/baskets/products`, {
         params: {
           userAccessKey: context.state.userAccessKey,
         },
         data: {
-          productId: productId,
+          basketItemId: productId,
         },
       })
         .then((response) => {

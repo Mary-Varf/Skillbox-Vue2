@@ -23,18 +23,21 @@
     </div>
     <section class="item">
       <div class="item__pics pics">
-        <div class="pics__wrapper">
-          <img width="570" height="570" :src="product.image.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+        <div class="pics__wrapper" style='position: relative'>
+          <img width="570" height="570" :src="product.preview.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+          <transition name='fade'>
+          <img class='abs_position' v-if='transition' width="570" height="570" :src="product.preview.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+          </transition>
         </div>
         <ul class="pics__list">
           <li class="pics__item">
             <a href="" class="pics__link pics__link--current">
-              <img width="98" height="98" :src="product.image.file.url" srcset="img/phone-square-1@2x.jpg 2x" :alt="product.title">
+              <img width="98" height="98" :src="product.preview.file.url" srcset="img/phone-square-1@2x.jpg 2x" :alt="product.title">
             </a>
           </li>
           <li class="pics__item">
             <a href="" class="pics__link">
-              <img width="98" height="98" :src="product.image.file.url" srcset="img/phone-square-3@2x.jpg 2x" :alt="product.title">
+              <img width="98" height="98" :src="product.preview.file.url" srcset="img/phone-square-3@2x.jpg 2x" :alt="product.title">
             </a>
           </li>
         </ul>
@@ -42,7 +45,7 @@
       <div class="item__info">
         <span class="item__code">Артикул: {{product.id}}</span>
         <h2 class="item__title">
-          {{product.title}}
+          {{title}} ({{colorWord}})
         </h2>
         <div class="item__form">
           <form class="form" action="#" method="POST" @submit.prevent="addToCart">
@@ -52,52 +55,23 @@
             <fieldset class="form__block">
               <legend class="form__legend">Цвет:</legend>
               <ul class="colors">
-                <li class="colors__item">
-                  <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="blue" checked="">
-                    <span class="colors__value" style="background-color: #73B6EA;">
+                <li class='colors__item' v-for='color in colorsList' :key='color.id'>
+                  <label class='colors__label'>
+                    <input name='color' class='colors__radio sr-only' type='radio' v-model.number='currentColorId' :value='color.color.id'>
+                    <span class='colors__value' :style="{backgroundColor: color.color.code}" :class="{checkedItem: color.color.id === selectedColor}">
                     </span>
                   </label>
-                </li>
-                <li class="colors__item">
-                  <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="yellow">
-                    <span class="colors__value" style="background-color: #FFBE15;">
-                    </span>
-                  </label>
-                </li>
-                <li class="colors__item">
-                  <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="gray">
-                    <span class="colors__value" style="background-color: #939393;">
-                  </span></label>
                 </li>
               </ul>
             </fieldset>
-            <fieldset class="form__block">
+            <fieldset class="form__block" v-show='product.mainProp.id === 6'>
               <legend class="form__legend">Объемб в ГБ:</legend>
               <ul class="sizes sizes--primery">
-                <li class="sizes__item">
+                <li class="sizes__item"  v-for='memory in memoryArray' :key='memory.propValues[0].value' >
                   <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="32">
-                    <span class="sizes__value">
-                      32gb
-                    </span>
-                  </label>
-                </li>
-                <li class="sizes__item">
-                  <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="64">
-                    <span class="sizes__value">
-                      64gb
-                    </span>
-                  </label>
-                </li>
-                <li class="sizes__item">
-                  <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="128" checked="">
-                    <span class="sizes__value">
-                      128gb
+                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" v-model.number='currentMemoryId' :value='memory.id'>
+                    <span class="sizes__value" :class="{checked_memory: memory.id === selectedMemory}">
+                      {{memory.propValues[0].value}}
                     </span>
                   </label>
                 </li>
@@ -105,11 +79,11 @@
             </fieldset>
             <div class="item__row">
               <AmountBlock :productAmount.sync="productAmount" :size="size"/>
-              <button class="button button--primery" type="submit" :disabled='productAddSending'>
+              <button class="button button--primery" type="submit" v-on:click='transition = !transition' :disabled='productAddSending'>
                 В корзину
               </button>
             </div>
-            <div v-show='productAdded'>Товар добавлен в корзину</div>
+            <div v-show='productAdded'><br />Товар добавлен в корзину</div>
             <div v-show='productAddSending'>Добавление товара в корзину...</div>
           </form>
         </div>
@@ -174,6 +148,9 @@ export default {
   components: { AmountBlock, Preloader },
   data() {
     return {
+      transition: false,
+      currentColorId: 0,
+      currentMemoryId: 0,
       productAmount: 1,
       size: 12,
       productData: null,
@@ -187,11 +164,36 @@ export default {
     numberFormat,
   },
   computed: {
+    title() {
+      return this.productData.offers.find((el) => el.id === this.selectedMemory).title;
+    },
+    colorWord() {
+      return this.colorsList.find((el) => el.color.id === this.selectedColor).color.title;
+    },
+    selectedColor() {
+      if (this.$store.state.filterColor === 0) {
+        if (this.currentColorId === 0) return this.product.colors[0].color.id;
+        return this.currentColorId;
+      }
+      return this.$store.state.filterColor;
+    },
+    selectedMemory() {
+      if (this.currentMemoryId === 0) {
+        return this.product.offers[0].id;
+      }
+      return this.currentMemoryId;
+    },
     product() {
       return this.productData;
     },
     category() {
       return this.productData.category;
+    },
+    colorsList() {
+      return this.product.colors;
+    },
+    memoryArray() {
+      return this.product.offers;
     },
   },
   methods: {
@@ -199,9 +201,8 @@ export default {
     goToPage,
     addToCart() {
       this.productAdded = false;
-      this.productAddSending = true;
       if (this.productAmount >= 1) {
-        this.addProductToCart({ productId: this.product.id, amount: this.productAmount })
+        this.addProductToCart({ productId: this.selectedMemory, amount: this.productAmount, colorId: this.selectedColor })
           .then(() => {
             this.productAdded = true;
             this.productAddSending = false;

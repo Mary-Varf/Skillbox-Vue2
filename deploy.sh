@@ -10,7 +10,8 @@ cd dist
 
 #инициализация репозитория и загрузка кода на гит
 git init
-git add -addgit commit -m 'deploy'
+git add -A
+git commit -m 'deploy'
 
 git push -f https://github.com/Mary-Varf/vue-app.git master:gh-pages
 
