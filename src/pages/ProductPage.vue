@@ -50,7 +50,7 @@
         <div class="item__form">
           <form class="form" action="#" method="POST" @submit.prevent="addToCart">
             <b class="item__price">
-              {{product.price | numberFormat}} ₽
+              {{price | numberFormat}} ₽
             </b>
             <fieldset class="form__block">
               <legend class="form__legend">Цвет:</legend>
@@ -164,8 +164,11 @@ export default {
     numberFormat,
   },
   computed: {
+    price() {
+      return this.productData.offers.find((el) => el.id === this.selectedMemory).price;
+    },
     title() {
-      return this.productData.offers.find((el) => el.id === this.selectedMemory).title;
+      return this.productData.offers.find((el) => el.id === this.selectedMemory).title.replace(/ *\([^)]*\) */g, '');
     },
     colorWord() {
       return this.colorsList.find((el) => el.color.id === this.selectedColor).color.title;
