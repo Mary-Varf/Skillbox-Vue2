@@ -90,6 +90,9 @@ export default {
     colors() {
       return this.colorsData ? this.colorsData.items : [];
     },
+    colorTitleCalc() {
+      return this.colors.find((color) => color.id === this.currentColorId).title || '';
+    },
   },
   watch: {
     priceFrom(value) {
@@ -116,7 +119,7 @@ export default {
       this.$emit('update:categoryId', this.currentCategoryId);
       this.$emit('update:colorId', this.currentColorId);
       this.$emit('update:memory', this.currentMemory);
-      this.$emit('update:colorTitle', this.colors.find((color) => color.id === this.currentColorId).color.title);
+      this.$emit('update:colorTitle', this.colorTitleCalc);
       this.$emit('update:page', this.startPage);
     },
     reset() {

@@ -121,9 +121,9 @@ export default {
         if (this.filterMemory.length !== 0 && this.filterMemory.length !== 6) {
           const obj = { ...this.filterMemory };
           const memoryArr = Object.values(obj);
-          memoryUrl = (colorUrl === '' ? '?props' : '&props');
+          memoryUrl = (colorUrl === '' ? '?' : '&');
           memoryArr.forEach((el) => {
-            memoryUrl += `[built_in_memory][]=${el}GB&`;
+            memoryUrl += `props[built_in_memory][]=${el}GB&`;
           });
         }
         console.log(memoryUrl);
