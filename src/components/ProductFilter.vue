@@ -91,7 +91,8 @@ export default {
       return this.colorsData ? this.colorsData.items : [];
     },
     colorTitleCalc() {
-      return this.colors.find((color) => color.id === this.currentColorId).title || '';
+      const val = (this.currentColorId === 0) ? 1 : this.currentColorId;
+      return this.colors.find((color) => color.id === val).title || '';
     },
   },
   watch: {
@@ -108,7 +109,8 @@ export default {
       this.currentCategoryId = value;
     },
     colorId(value) {
-      this.currentColorTitle = this.colors.find((color) => color.id === value).title;
+      const val = (value === 0) ? 1 : value;
+      this.currentColorTitle = this.colors.find((color) => color.id === val).title;
       this.currentColorId = value;
     },
   },

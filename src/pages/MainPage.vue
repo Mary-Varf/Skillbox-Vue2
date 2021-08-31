@@ -13,7 +13,13 @@
     <div class='content__catalog'>
       <ProductFilter :memory.sync='filterMemory' :page.sync='page' :color-id.sync='filterColor' :price-from.sync='filterPriceFrom' :price-to.sync='filterPriceTo' :category-id.sync='filterCategory' :color-title.sync='filterColorTitle'/>
       <section class='catalog'>
-        <h1 v-if='empty'>К сожалению, таких товаров нет.</h1>
+        <div v-if='empty' style='align-self:center'>
+          <aside class='filter' style='text-align: center; max-width: 500px'>
+            <h2 class='filter__title' style='line-height: 1.5'>К сожалению, таких товаров нет.</h2>
+            <h3 >Сбросить все фильтры?</h3>
+            <button class='filter__submit button button--primery' style='width: 150px' @click.prevent='reset'>Да</button>
+          </aside>
+        </div>
         <ProductList :products='products' :filterColor='filterColor'/>
         <Preloader v-if='productLoading' />
         <div v-if='productLoadingFailed'>Произошла ошибка при загрузке товаров <button @click.prevent='loadProducts'>Попробовать еще</button></div>
@@ -107,6 +113,15 @@ export default {
     },
   },
   methods: {
+    reset() {
+      this.filterPriceFrom = 0;
+      this.filterPriceTo = 0;
+      this.filterCategory = 0;
+      this.filterColor = 0;
+      this.filterMemory = [];
+      this.filterColorTitle = '';
+      this.loadProducts();
+    },
     loadProducts() {
       this.productLoading = true;
       this.productLoadingFailed = false;
