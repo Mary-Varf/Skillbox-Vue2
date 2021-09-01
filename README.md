@@ -31,4 +31,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Description
 
-Skillbox_Vue2 is a shop implemented on Vue2.
+Skillbox_Vue2 is online store implemented on Vue2.
