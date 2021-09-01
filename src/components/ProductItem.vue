@@ -59,13 +59,23 @@ export default {
   },
   methods: {
     goToPage,
-    ...mapActions(['addProductToCart']),
+    ...mapActions(['addProductToCart', 'loadCart']),
     addToCart() {
       this.productAdded = false;
       const color = typeof this.selectedColor === 'object' ? this.selectedColor.color.id : this.selectedColor;
       this.addProductToCart({ productId: this.product.offers[0].id, amount: 1, colorId: color })
         .then(() => {
           this.productAdded = true;
+        })
+        .catch(() => {
+          this.productAdded = false;
+          this.addProductToCart({ productId: this.product.offers[0].id, amount: 1, colorId: color })
+            .then(() => {
+              this.productAdded = true;
+            })
+            .catch(() => {
+              this.productAdded = false;
+            });
         });
     },
   },

@@ -101,6 +101,27 @@ export default new Vuex.Store({
         .then((response) => {
           context.commit('updateCartProductsData', response.data.items);
           context.commit('syncCartProducts');
+        })
+        .catch(() => {
+          localStorage.removeItem('userAccessKey');
+          axios.get(`${API_BASE_URL.API_BASE_URL}/api/baskets`)
+            .then((response) => {
+              localStorage.setItem('userAccessKey', response.data.user.accessKey);
+              context.commit('updateUserAccessKey', response.data.user.accessKey);
+              axios.post(`${API_BASE_URL.API_BASE_URL}/api/baskets/products?userAccessKey=${context.state.userAccessKey}`, {
+                productOfferId: productId,
+                colorId: colorId,
+                quantity: amount,
+              })
+                .then((response2) => {
+                  context.commit('updateCartProductsData', response2.data.items);
+                  context.commit('syncCartProducts');
+                });
+              context.commit('updateCartError', false);
+            })
+            .catch(() => {
+              context.commit('updateCartProductsData', []);
+            });
         });
     },
     updateCartProductAmount(context, { productId, amount }) {
