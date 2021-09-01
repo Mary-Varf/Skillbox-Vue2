@@ -1,4 +1,5 @@
 <h1 align='center'>Skillbox Vue </h1>
+<a href='https://mary-varf.github.io/Technozavrr/'><h2>DEMO</h2></a>
 
 <p align='center'>
 <img src='https://media.giphy.com/media/n7h5HSpsKPtFxIxdAg/giphy.gif' width='60%'>
