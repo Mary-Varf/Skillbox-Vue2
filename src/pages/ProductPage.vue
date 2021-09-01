@@ -62,14 +62,14 @@
                 </li>
               </ul>
             </fieldset>
-            <fieldset class="form__block" v-show='product.mainProp.id === 6'>
-              <legend class="form__legend">Объемб в ГБ:</legend>
+            <fieldset class="form__block" v-show='product.mainProp.id !== 7'>
+              <legend class="form__legend">{{product.mainProp.title}}:</legend>
               <ul class="sizes sizes--primery">
-                <li class="sizes__item"  v-for='memory in memoryArray' :key='memory.propValues[0].value' >
+                <li class="sizes__item"  v-for='prop in this.product.offers' :key='prop.propValues[0].value' >
                   <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" v-model.number='currentMemoryId' :value='memory.id'>
-                    <span class="sizes__value" :class="{checked_memory: memory.id === selectedMemory}">
-                      {{memory.propValues[0].value}}
+                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" v-model.number='currentPropId' :value='prop.id'>
+                    <span class="sizes__value" :class="{checked_memory: prop.id === selectedProp}">
+                      {{prop.propValues[0].value}}
                     </span>
                   </label>
                 </li>
@@ -160,7 +160,7 @@ export default {
     return {
       transition: false,
       currentColorId: 0,
-      currentMemoryId: 0,
+      currentPropId: 0,
       productAmount: 1,
       size: 12,
       productData: null,
@@ -177,10 +177,10 @@ export default {
   },
   computed: {
     price() {
-      return this.productData.offers.find((el) => el.id === this.selectedMemory).price;
+      return this.productData.offers.find((el) => el.id === this.selectedProp).price;
     },
     title() {
-      return this.productData.offers.find((el) => el.id === this.selectedMemory).title.replace(/ *\([^)]*\) */g, '');
+      return this.productData.offers.find((el) => el.id === this.selectedProp).title.replace(/ *\([^)]*\) */g, '');
     },
     colorWord() {
       return this.colorsList.find((el) => el.color.id === this.selectedColor).color.title;
@@ -195,11 +195,11 @@ export default {
       }
       return this.$store.state.filterColor;
     },
-    selectedMemory() {
-      if (this.currentMemoryId === 0) {
+    selectedProp() {
+      if (this.currentPropId === 0) {
         return this.product.offers[0].id;
       }
-      return this.currentMemoryId;
+      return this.currentPropId;
     },
     product() {
       return this.productData;
@@ -223,7 +223,7 @@ export default {
     addToCart() {
       this.productAdded = false;
       if (this.productAmount >= 1) {
-        this.addProductToCart({ productId: this.selectedMemory, amount: this.productAmount, colorId: this.selectedColor })
+        this.addProductToCart({ productId: this.selectedProp, amount: this.productAmount, colorId: this.selectedColor })
           .then(() => {
             this.productAdded = true;
             this.productAddSending = false;
