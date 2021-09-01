@@ -128,8 +128,7 @@ export default {
       clearTimeout(this.loadProductsTimer);
       this.loadProductsTimer = setTimeout(() => {
         let colorUrl = '';
-        if (this.filterColorTitle.length !== 0) {
-          console.log();
+        if (this.filterColorTitle.length !== 0 && this.filterColor !== 0) {
           colorUrl = `?props[color][]=${this.filterColorTitle}`;
         }
         let memoryUrl = '';

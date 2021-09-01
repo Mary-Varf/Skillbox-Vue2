@@ -24,21 +24,19 @@
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper" style='position: relative'>
-          <img width="570" height="570" :src="product.preview.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+          <img width="570" height="570" :src="imgsList[currentImg]"  :alt="product.title">
           <transition name='fade'>
-          <img class='abs_position' v-if='transition' width="570" height="570" :src="product.preview.file.url" srcset="img/phone-square@2x.jpg 2x" :alt="product.title">
+          <img class='abs_position' v-if='transition' width="570" height="570" :src="imgsList[currentImg]"  :alt="product.title">
           </transition>
         </div>
         <ul class="pics__list">
-          <li class="pics__item">
-            <a href="" class="pics__link pics__link--current">
-              <img width="98" height="98" :src="product.preview.file.url" srcset="img/phone-square-1@2x.jpg 2x" :alt="product.title">
-            </a>
-          </li>
-          <li class="pics__item">
-            <a href="" class="pics__link">
-              <img width="98" height="98" :src="product.preview.file.url" srcset="img/phone-square-3@2x.jpg 2x" :alt="product.title">
-            </a>
+          <li class="pics__item" v-for='(img, index) in imgsList' :key='index'>
+            <label>
+              <input class='img_input' name='img' type='radio' v-model.number='currentImg' :value='index'/>
+              <div class="pics__link cursor-pointer"  :class="{'pics__link--current': currentImg == index}">
+                <img width="98" height="159" :src="img" :alt="product.title">
+              </div>
+            </label>
           </li>
         </ul>
       </div>
@@ -90,37 +88,25 @@
       </div>
       <div class="item__desc">
         <ul class="tabs">
-          <li class="tabs__item">
-            <a class="tabs__link tabs__link--current">
-              Описание
-            </a>
-          </li>
-          <li class="tabs__item">
-            <a class="tabs__link" href="#">
-              Характеристики
-            </a>
-          </li>
-          <li class="tabs__item">
-            <a class="tabs__link" href="#">
-              Гарантия
-            </a>
-          </li>
-          <li class="tabs__item">
-            <a class="tabs__link" href="#">
-              Оплата и доставка
-            </a>
+          <li class="tabs__item" v-for='(tab, index) in tabsList' :key='index'>
+          <label>
+            <input class='img_input' name='tab' type='radio' v-model.number='currentTab' :value='index'/>
+            <div class="tabs__link cursor-pointer" :class="{'tabs__link--current': currentTab == index}">
+              {{tab}}
+            </div>
+          </label>
           </li>
         </ul>
-        <div class="item__content">
+        <div class="item__content" v-if='currentTab === 0'>
           <p>
             Навигация GPS, ГЛОНАСС, BEIDOU Galileo и QZSS<br>
             Синхронизация со смартфоном<br>
             Связь по Bluetooth Smart, ANT+ и Wi-Fi<br>
             Поддержка сторонних приложений<br>
           </p>
-          <a href="#">
+          <button class='item__content--button' @click.prevent='changeTab'>
             Все характеристики
-          </a>
+          </button>
           <h3>Что это?</h3>
           <p>
             Wahoo ELEMNT BOLT GPS – это велокомпьютер, который позволяет оптимизировать свои велотренировки, сделав их максимально эффективными. Wahoo ELEMNT BOLT GPS синхронизируется с датчиками по ANT+, объединяя полученную с них информацию. Данные отображаются на дисплее, а также сохраняются на смартфоне. При этом на мобильное устройство можно установить как фирменное приложение, так и различные приложения сторонних разработчиков. Велокомпьютер точно отслеживает местоположение, принимая сигнал с целого комплекса спутников. Эта информация позволяет смотреть уже преодоленные маршруты и планировать новые велопрогулки.
@@ -129,6 +115,30 @@
           <p>
             Велокомпьютер Wahoo ELEMNT BOLT очень компактный. Размеры устройства составляют всего 74,6 x 47,3 x 22,1 мм. что не превышает габариты смартфона. Корпус гаджета выполнен из черного пластика. На обращенной к пользователю стороне расположен дисплей диагональю 56 мм. На дисплей выводятся координаты и скорость, а также полученная со смартфона и синхронизированных датчиков информация: интенсивность, скорость вращения педалей, пульс и т.д. (датчики не входят в комплект поставки). Корпус велокомпьютера имеет степень защиты от влаги IPX7. Это означает, что устройство не боится пыли, а также выдерживает кратковременное (до 30 минут) погружение в воду на глубину не более 1 метра.
           </p>
+        </div>
+        <div class="item__content" v-if='currentTab === 1'>
+          <p>
+            Навигация GPS, ГЛОНАСС, BEIDOU Galileo и QZSS<br>
+            Синхронизация со смартфоном<br>
+            Связь по Bluetooth Smart, ANT+ и Wi-Fi<br>
+            Поддержка сторонних приложений<br>
+            аккумулятор: 3000 мА·ч<br/>
+            процессор: Mediatek Helio P22 (MT6762V)<br/>
+            SIM-карты: 2 (nano SIM)<br/>
+            операционная система: Android 8.1<br/>
+            беспроводные интерфейсы: Wi-Fi, Bluetooth 4.2<br/>
+            интернет: 4G LTE<br/>
+            вес: 145 г<br/>
+          </p>
+        </div>
+        <div class="item__content" v-if='currentTab === 2'>
+          <p>Срок гарантии: 1 год</p>
+        </div>
+        <div class="item__content" v-if='currentTab === 3'>
+          <h3>Самовывоз</h3>
+          <p>Бесплатно. Данную опцию Вы сможете выбрать при оформлении заказа.</p>
+          <h3>Курьером</h3>
+          <p>Цена доставки курьером составляет 500 рублей. Данную опцию Вы сможете выбрать при оформлении заказа. Доставка будет включена в стоимость.</p>
         </div>
       </div>
     </section>
@@ -158,6 +168,8 @@ export default {
       productLoadingFailed: false,
       productAdded: false,
       productAddSending: false,
+      currentImg: 0,
+      currentTab: 0,
     };
   },
   filters: {
@@ -172,6 +184,9 @@ export default {
     },
     colorWord() {
       return this.colorsList.find((el) => el.color.id === this.selectedColor).color.title;
+    },
+    imgsList() {
+      return [this.product.preview.file.url, 'http://placehold.it/98x159/'];
     },
     selectedColor() {
       if (this.$store.state.filterColor === 0) {
@@ -191,6 +206,9 @@ export default {
     },
     category() {
       return this.productData.category;
+    },
+    tabsList() {
+      return ['Описание', 'Характеристики', 'Гарантия', 'Оплата и доставка'];
     },
     colorsList() {
       return this.product.colors;
@@ -218,6 +236,9 @@ export default {
         .then((response) => { this.productData = response.data; })
         .catch(() => { this.productLoadingFailed = true; })
         .then(() => { this.productLoading = false; });
+    },
+    changeTab() {
+      this.currentTab = 1;
     },
   },
   created() {
